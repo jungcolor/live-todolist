@@ -29,7 +29,7 @@ server.api("get", "/api/todo", (req, res) => {
     db.query(readSql, payload => {
         const { success, datas } = payload;
         if (success) {
-            datas?.forEach(row => {
+            datas.forEach(row => {
                 row.complete = convertBoolean(row.complete);
             });
         }
