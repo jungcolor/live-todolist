@@ -2,7 +2,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const port = 5000;
+const port = 80;
 
 // 로컬 모듈
 const db = require("./config/db");
@@ -17,10 +17,15 @@ server.init(express(), port);
 // 미들웨어 설정
 server.setMiddleWare(bodyParser.urlencoded({ extended: true }));
 server.setMiddleWare(bodyParser.json());
-server.setMiddleWare(cors({ origin: true }));
+server.setMiddleWare(express.static(__dirname + "/public"));
+// server.setMiddleWare(cors({ origin: true }));
 
 // 서버 연결
 server.connect();
+
+server.api("get", "/", (req, res) => {
+    res.status(200).sendFile(__dirname + "/index.html");
+});
 
 // 서버 CRUD
 server.api("get", "/api/todo", (req, res) => {

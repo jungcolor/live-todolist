@@ -172,7 +172,7 @@ const todos = {
 
     // UTIL =============================================================================
     callAPI: async function (url, options) {
-        const response = await fetch(`https://localhost:5000${url}`, options);
+        const response = await fetch(url, options);
         const datas = await response.json();
 
         return datas;
