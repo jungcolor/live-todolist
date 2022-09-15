@@ -16,7 +16,8 @@ server.init(express(), port);
 
 // 미들웨어 설정
 server.setMiddleWare(bodyParser.urlencoded({ extended: true }));
-server.setMiddleWare(bodyParser.json());
+// express 4.16 이후 express에서 json미들웨어 제공 body-parser 사용하지 않아도됨
+server.setMiddleWare(express.json());
 server.setMiddleWare(express.static(__dirname + "/public"));
 // server.setMiddleWare(cors({ origin: true }));
 
@@ -32,20 +33,16 @@ server.api("get", "/api/todo", (req, res) => {
     const readSql = `SELECT * FROM todotable`;
 
     db.query(readSql, payload => {
-        const { success, datas } = payload;
-        if (success) {
-            datas.forEach(row => {
-                row.complete = convertBoolean(row.complete);
-            });
-        }
+        const { success } = payload;
 
-        res.send(payload);
+        if (success) {
+            res.send(payload);
+        }
     });
 });
 
-server.api("post", "/api/todo/add", (req, res) => {
+server.api("post", "/api/todo", (req, res) => {
     let { id, content, complete } = req.body;
-    complete = complete ? 1 : 0;
 
     const insertSql = `INSERT INTO todotable(id, content, complete) VALUES('${id}', '${content}', '${complete}')`;
 
@@ -54,7 +51,7 @@ server.api("post", "/api/todo/add", (req, res) => {
     });
 });
 
-server.api("put", "/api/todo/update/:id", (req, res) => {
+server.api("put", "/api/todo/:id", (req, res) => {
     const { id } = req.params;
     const selectSql = `SELECT complete FROM todotable WHERE id="${id}"`;
 
@@ -72,7 +69,7 @@ server.api("put", "/api/todo/update/:id", (req, res) => {
     });
 });
 
-server.api("delete", "/api/todo/delete/:id", (req, res) => {
+server.api("delete", "/api/todo/:id", (req, res) => {
     const { id } = req.params;
     const deleteSql = `DELETE FROM todotable WHERE id="${id}";`;
 
@@ -80,7 +77,3 @@ server.api("delete", "/api/todo/delete/:id", (req, res) => {
         payload.success && res.send(payload);
     });
 });
-
-const convertBoolean = (complete) => {
-    return complete === 0 ? false : true;
-}

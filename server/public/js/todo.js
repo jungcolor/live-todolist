@@ -58,7 +58,7 @@ const todos = {
     },
 
     makeItem: async function (value) {
-        const newItem = { id: this.uuid(), content: value, complete: false };
+        const newItem = { id: `todo_${window.crypto.randomUUID()}`, content: value, complete: 0 }; // uuid대신 네이티브 uuid사용
         const options = {
             method: "post",
             headers: {
@@ -66,7 +66,7 @@ const todos = {
             },
             body: JSON.stringify(newItem)
         };
-        const datas = await this.callAPI(`/api/todo/add`, options);
+        const datas = await this.callAPI(`/api/todo`, options);
 
         if (datas.success) {
             this.todoList.push(newItem);
@@ -76,7 +76,7 @@ const todos = {
 
     removeItem: async function (id) {
         const options = { method: "delete", body: JSON.stringify(id) };
-        const datas = await this.callAPI(`/api/todo/delete/${id}`, options);
+        const datas = await this.callAPI(`/api/todo/${id}`, options);
 
         if (datas.success) {
             const itemIdx = this.todoList.findIndex(item => item.id === id);
@@ -88,7 +88,7 @@ const todos = {
     updateItem: async function (id) {
         const item = this.todoList.filter(todo => todo.id === id);
         const options = { method: "put" };
-        const datas = await this.callAPI(`/api/todo/update/${item[0].id}`, options);
+        const datas = await this.callAPI(`/api/todo/${item[0].id}`, options);
 
         if (datas.success) {
             item[0].complete = !item[0].complete;
